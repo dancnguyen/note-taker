@@ -4,6 +4,36 @@
   touch-action: manipulation;
 }
 
+body {
+  color: var(--rz-text-color);
+  background-color: var(--rz-body-background-color);
+  font-family: var(--rz-text-font-family);
+}
+
+html:root {
+  --note-accent: #268BD2;
+  --rz-primary: var(--note-accent);
+  --rz-primary-light: color-mix(in srgb, var(--note-accent) 80%, white);
+  --rz-primary-lighter: color-mix(in srgb, var(--note-accent) 12%, transparent);
+  --rz-primary-dark: color-mix(in srgb, var(--note-accent) 80%, black);
+  --rz-primary-darker: color-mix(in srgb, var(--note-accent) 68%, black);
+  --rz-on-primary: #ffffff;
+  --rz-on-primary-light: #ffffff;
+  --rz-on-primary-lighter: var(--note-accent);
+  --rz-on-primary-dark: #ffffff;
+  --rz-on-primary-darker: #ffffff;
+}
+
+.rz-layout {
+  --rz-header-background-color: var(--rz-primary);
+  --rz-header-color: var(--rz-on-primary);
+}
+
+.note-editor {
+  width: 100%;
+  height: 100%;
+}
+
 .valid.modified:not([type=checkbox]) {
   outline: 1px solid #26b050;
 }

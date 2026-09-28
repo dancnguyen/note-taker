@@ -1,9 +1,38 @@
 ﻿@inherits LayoutComponentBase
 
 <HeadContent>
-  <RadzenTheme Theme="material" />
+  <RadzenTheme Theme="@DefaultTheme" />
 </HeadContent>
 
 <RadzenComponents />
 
-@Body
+<RadzenLayout>
+  <RadzenHeader>
+    <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" JustifyContent="JustifyContent.SpaceBetween" class="rz-px-4 rz-py-2">
+      <RadzenStack Orientation="Orientation.Horizontal" AlignItems="AlignItems.Center" Gap="0.5rem">
+        <RadzenSidebarToggle Icon="menu" Click="@(() => SidebarExpanded = !SidebarExpanded)" ToggleAriaLabel="Toggle notes" class="rz-m-0" />
+        <RadzenText Text="Note Taker" TextStyle="TextStyle.H5" TagName="TagName.Span" class="rz-m-0 rz-color-on-primary" />
+      </RadzenStack>
+      <RadzenAppearanceToggle />
+    </RadzenStack>
+  </RadzenHeader>
+  <RadzenSidebar @bind-Expanded="SidebarExpanded" Responsive="false">
+    <RadzenPanelMenu>
+      @foreach (var note in NotesService.Notes)
+      {
+        <RadzenPanelMenuItem Text="@note.Name" Icon="description"
+                             Selected="@(note == NotesService.Current)"
+                             Click="@(() => NotesService.SelectAsync(note))" />
+      }
+    </RadzenPanelMenu>
+    <div class="rz-p-4">
+      <RadzenStack Gap="0.5rem">
+        <RadzenButton Text="Add Note" Icon="add" Click="@NotesService.AddNoteAsync" class="rz-w-100" />
+        <RadzenButton Text="Clear All" Icon="delete_sweep" ButtonStyle="ButtonStyle.Danger" Variant="Variant.Outlined" Click="@OnClearAllClick" class="rz-w-100" />
+      </RadzenStack>
+    </div>
+  </RadzenSidebar>
+  <RadzenBody>
+    @Body
+  </RadzenBody>
+</RadzenLayout>

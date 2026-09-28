@@ -1,2 +1,7 @@
-﻿<h3>ConfirmationDialog</h3>
-
+﻿<RadzenStack Gap="1.5rem">
+  <RadzenText Text="@Message" TextStyle="TextStyle.Body1" />
+  <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
+    <RadzenButton Text="@CancelText" ButtonStyle="ButtonStyle.Base" Variant="Variant.Flat" Click="@OnCancel" />
+    <RadzenButton Text="@ConfirmText" ButtonStyle="ButtonStyle.Primary" Click="@OnConfirm" />
+  </RadzenStack>
+</RadzenStack>

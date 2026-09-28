@@ -20,5 +20,18 @@ namespace NoteTaker.Pages
     [Inject]
     protected TooltipService TooltipService { get; set; } = default!;
 
+    [Parameter]
+    public string Message { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ConfirmText { get; set; } = "Confirm";
+
+    [Parameter]
+    public string CancelText { get; set; } = "Cancel";
+
+    protected void OnConfirm() => DialogService.Close(true);
+
+    protected void OnCancel() => DialogService.Close(false);
+
   }
 }

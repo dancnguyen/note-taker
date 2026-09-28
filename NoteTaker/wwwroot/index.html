@@ -4,10 +4,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NoteTaker</title>
+  <title>Note Taker</title>
   <base href="/" />
   <link rel="preload" id="webassembly" />
   <link rel="stylesheet" href="css/app.css" />
+  <script>
+    (function () {
+      var fonts = "_content/Radzen.Blazor/fonts/";
+      [
+        new FontFace("Material Symbols", "url(" + fonts + "MaterialSymbolsOutlined.woff2) format('woff2')", { style: "normal", weight: "100 700" }),
+        new FontFace("Roboto", "url(" + fonts + "RobotoFlex.woff2) format('woff2')", { weight: "100 1000", display: "swap" })
+      ].forEach(function (face) {
+        document.fonts.add(face);
+        face.load();
+      });
+    })();
+  </script>
+  <script>
+    (function () {
+      var theme = "material-dark";
+      try {
+        var saved = JSON.parse(localStorage.getItem("theme"));
+        if (typeof saved === "string" && /^[a-z-]+$/.test(saved)) {
+          theme = saved;
+        }
+      } catch (e) { }
+
+      document.write('<link id="initial-theme-link" rel="stylesheet" href="_content/Radzen.Blazor/css/' + theme + '-base.css" />');
+
+      function preloadThemes(href) {
+        var light = href.replace("-dark-base.css", "-base.css");
+        var dark = light.replace("-base.css", "-dark-base.css");
+        [light, dark].forEach(function (url) {
+          var link = document.createElement("link");
+          link.rel = "stylesheet";
+          link.media = "not all";
+          link.href = url;
+          document.body.appendChild(link);
+        });
+      }
+
+      new MutationObserver(function (_, observer) {
+        var radzenLink = document.getElementById("radzen-theme-link");
+        if (!radzenLink) return;
+        observer.disconnect();
+        var onThemeLoaded = function () {
+          var initial = document.getElementById("initial-theme-link");
+          if (initial) initial.remove();
+          preloadThemes(radzenLink.getAttribute("href"));
+        };
+        if (radzenLink.sheet) onThemeLoaded();
+        else radzenLink.addEventListener("load", onThemeLoaded, { once: true });
+      }).observe(document.head, { childList: true });
+    })();
+  </script>
   <script type="importmap"></script>
 </head>
 

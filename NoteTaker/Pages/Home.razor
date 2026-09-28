@@ -1,11 +1,5 @@
 ﻿@page "/"
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Note Taker</PageTitle>
 
-<h1>Hello, world!</h1>
-
-Welcome to your new app.
-
-<RadzenText Text="Hello Radzen! How are you today?" />
-
-<RadzenButton Click="OnConfirmClick" Text="Confirm" />
+<RadzenHtmlEditor @key="NotesService.Current" Value="@NotesService.Current.Content" Input="@OnContentInput" class="note-editor" />
