@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
+using NoteTaker.Models;
 using NoteTaker.Pages;
 using NoteTaker.Services;
 using Radzen;
@@ -71,6 +72,27 @@ namespace NoteTaker.Layout
 
       if (confirmed is true) 
         await NotesService.ClearAllAsync();
+    }
+
+    protected async Task OnExportClick()
+    {
+      if (await DialogService.OpenAsync<ExportDialog>("Export Note") is not ExportFormat format)
+        return;
+
+      var note = NotesService.Current;
+      string result;
+      try
+      {
+        result = await JSRuntime.InvokeAsync<string>("noteTaker.exportNote", note.Name, note.Content, format);
+      }
+      catch (JSException ex)
+      {
+        NotificationService.Notify(NotificationSeverity.Error, "Export failed", ex.Message);
+        return;
+      }
+
+      if (result == "saved")
+        NotificationService.Notify(NotificationSeverity.Success, "Exported", $"{note.Name} was saved as {format.Name}.");
     }
 
     private async void OnThemeChanged()
