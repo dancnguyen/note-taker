@@ -38,43 +38,40 @@ namespace NoteTaker.Layout
 
     protected bool SidebarExpanded { get; set; }
 
-    private DotNetObjectReference<NotesService>? notesServiceReference;
-
     protected const string DefaultTheme = "material-dark";
 
     private const string ThemeStorageKey = "theme";
+
+    private DotNetObjectReference<NotesService>? NotesServiceReference;
 
     protected override async Task OnInitializedAsync()
     {
       try
       {
-        var savedTheme = await Storage.GetAsync<string>(ThemeStorageKey);
-        if (!string.IsNullOrEmpty(savedTheme))
-        {
+        var savedTheme = await Storage.GetItemAsync<string>(ThemeStorageKey);
+        if (!string.IsNullOrEmpty(savedTheme)) 
           ThemeService.SetTheme(savedTheme);
-        }
       }
       catch (JSException) { }
 
-      ThemeService.ThemeChanged += OnThemeChanged;
+      ThemeService.ThemeChanged += OnThemeChangedAsync;
 
       NotesService.CurrentChanged += StateHasChanged;
-      await NotesService.LoadAsync();
+      await NotesService.LoadNotesAsync();
 
-      notesServiceReference = DotNetObjectReference.Create(NotesService);
-      await JSRuntime.InvokeVoidAsync("noteTaker.saveOnPageHide", notesServiceReference);
+      NotesServiceReference = DotNetObjectReference.Create(NotesService);
+      await JSRuntime.InvokeVoidAsync("noteTaker.saveOnPageHide", NotesServiceReference);
     }
 
-    protected async Task OnClearAllClick()
+    protected async Task OnClearAllClickAsync()
     {
-      var confirmed = await DialogService.OpenAsync<ConfirmationDialog>("Confirm",
-        new Dictionary<string, object?> { ["Message"] = "Are you sure you would like to delete all notes?" });
+      var confirmed = await DialogService.OpenAsync<ConfirmationDialog>("Confirm", new Dictionary<string, object?> { ["Message"] = "Are you sure you would like to delete all notes?" });
 
       if (confirmed is true) 
         await NotesService.ClearAllAsync();
     }
 
-    protected async Task OnExportClick()
+    protected async Task OnExportClickAsync()
     {
       if (await DialogService.OpenAsync<ExportDialog>("Export Note") is not ExportFormat format)
         return;
@@ -95,20 +92,20 @@ namespace NoteTaker.Layout
         NotificationService.Notify(NotificationSeverity.Success, "Exported", $"{note.Name} was saved as {format.Name}.");
     }
 
-    private async void OnThemeChanged()
+    private async void OnThemeChangedAsync()
     {
       try
       {
-        await Storage.SetAsync(ThemeStorageKey, ThemeService.Theme);
+        await Storage.SetItemAsync(ThemeStorageKey, ThemeService.Theme);
       }
       catch (JSException) { }
     }
 
     public void Dispose()
     {
-      ThemeService.ThemeChanged -= OnThemeChanged;
+      ThemeService.ThemeChanged -= OnThemeChangedAsync;
       NotesService.CurrentChanged -= StateHasChanged;
-      notesServiceReference?.Dispose();
+      NotesServiceReference?.Dispose();
     }
   }
 }

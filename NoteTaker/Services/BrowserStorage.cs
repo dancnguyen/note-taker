@@ -12,7 +12,7 @@ namespace NoteTaker.Services
       this.jsRuntime = jsRuntime;
     }
 
-    public async Task<T?> GetAsync<T>(string key)
+    public async Task<T?> GetItemAsync<T>(string key)
     {
       var json = jsRuntime is IJSInProcessRuntime inProcess ? inProcess.Invoke<string?>("localStorage.getItem", key) : await jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
 
@@ -29,7 +29,7 @@ namespace NoteTaker.Services
       }
     }
 
-    public async Task SetAsync<T>(string key, T value)
+    public async Task SetItemAsync<T>(string key, T value)
     {
       var json = JsonSerializer.Serialize(value);
 
@@ -42,7 +42,7 @@ namespace NoteTaker.Services
       await jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
     }
 
-    public async Task RemoveAsync(string key)
+    public async Task RemoveItemAsync(string key)
     {
       if (jsRuntime is IJSInProcessRuntime inProcess)
       {

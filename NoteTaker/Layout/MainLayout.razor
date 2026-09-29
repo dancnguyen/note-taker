@@ -22,14 +22,14 @@
       {
         <RadzenPanelMenuItem Text="@note.Name" Icon="description"
                              Selected="@(note == NotesService.Current)"
-                             Click="@(() => NotesService.SelectAsync(note))" />
+                             Click="@(() => NotesService.SelectNoteAsync(note))" />
       }
     </RadzenPanelMenu>
     <div class="rz-p-4">
       <RadzenStack Gap="0.5rem">
         <RadzenButton Text="Add Note" Icon="add" Click="@NotesService.AddNoteAsync" class="rz-w-100" />
-        <RadzenButton Text="Export" Icon="download" Variant="Variant.Outlined" Click="@OnExportClick" class="rz-w-100" />
-        <RadzenButton Text="Clear All" Icon="delete_sweep" ButtonStyle="ButtonStyle.Danger" Click="@OnClearAllClick" class="rz-w-100 clear-all-button" />
+        <RadzenButton Text="Export" Icon="download" Variant="Variant.Outlined" Click="@OnExportClickAsync" class="rz-w-100" />
+        <RadzenButton Text="Clear All" Icon="delete_sweep" ButtonStyle="ButtonStyle.Danger" Click="@OnClearAllClickAsync" class="rz-w-100 clear-all-button" />
       </RadzenStack>
     </div>
   </RadzenSidebar>

@@ -27,7 +27,7 @@ namespace NoteTaker.Services
 
     public event Action? CurrentChanged;
 
-    public async Task LoadAsync()
+    public async Task LoadNotesAsync()
     {
       if (loaded) 
         return;
@@ -38,24 +38,20 @@ namespace NoteTaker.Services
       int savedCurrent;
       try
       {
-        savedContents = await storage.GetAsync<List<string>>(NotesStorageKey);
-        savedCurrent = await storage.GetAsync<int>(CurrentNoteStorageKey);
+        savedContents = await storage.GetItemAsync<List<string>>(NotesStorageKey);
+        savedCurrent = await storage.GetItemAsync<int>(CurrentNoteStorageKey);
       }
       catch (JSException)
       {
         return;
       }
 
-      if (savedContents is null || savedContents.Count == 0)
-      {
+      if (savedContents is null || savedContents.Count == 0) 
         return;
-      }
 
       notes.Clear();
-      foreach (var content in savedContents)
-      {
+      foreach (var content in savedContents) 
         AddNoteToList().Content = content ?? string.Empty;
-      }
 
       Current = notes.FirstOrDefault(n => n.Number == savedCurrent) ?? notes[0];
       CurrentChanged?.Invoke();
@@ -63,16 +59,14 @@ namespace NoteTaker.Services
 
     public async Task AddNoteAsync()
     {
-      await SelectAsync(AddNoteToList());
+      await SelectNoteAsync(AddNoteToList());
       await SaveNotesAsync();
     }
 
-    public async Task SelectAsync(Note note)
+    public async Task SelectNoteAsync(Note note)
     {
-      if (note == Current)
-      {
+      if (note == Current) 
         return;
-      }
 
       Current = note;
       CurrentChanged?.Invoke();
@@ -89,8 +83,8 @@ namespace NoteTaker.Services
 
       try
       {
-        await storage.RemoveAsync(NotesStorageKey);
-        await storage.RemoveAsync(CurrentNoteStorageKey);
+        await storage.RemoveItemAsync(NotesStorageKey);
+        await storage.RemoveItemAsync(CurrentNoteStorageKey);
       }
       catch (JSException) { }
     }
@@ -148,7 +142,7 @@ namespace NoteTaker.Services
     {
       try
       {
-        await storage.SetAsync(key, value);
+        await storage.SetItemAsync(key, value);
       }
       catch (JSException) { }
     }
