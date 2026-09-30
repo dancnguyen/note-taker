@@ -34,24 +34,29 @@ namespace NoteTaker.Services
 
       loaded = true;
 
-      List<string>? savedContents;
+      List<SavedNote>? savedNotes;
       int savedCurrent;
       try
       {
-        savedContents = await storage.GetItemAsync<List<string>>(NotesStorageKey);
+        savedNotes = await storage.GetItemAsync<List<SavedNote>>(NotesStorageKey);
         savedCurrent = await storage.GetItemAsync<int>(CurrentNoteStorageKey);
+
+        savedNotes ??= (await storage.GetItemAsync<List<string>>(NotesStorageKey))?.Select((content, i) => new SavedNote(i + 1, content)).ToList();
       }
       catch (JSException)
       {
         return;
       }
 
-      if (savedContents is null || savedContents.Count == 0) 
+      if (savedNotes is null || savedNotes.Count == 0) 
         return;
 
       notes.Clear();
-      foreach (var content in savedContents) 
-        AddNoteToList().Content = content ?? string.Empty;
+      foreach (var saved in savedNotes)
+      {
+        var number = saved.Number > 0 && notes.All(n => n.Number != saved.Number) ? saved.Number : NextNumber();
+        notes.Add(new Note(number) { Content = saved.Content ?? string.Empty });
+      }
 
       Current = notes.FirstOrDefault(n => n.Number == savedCurrent) ?? notes[0];
       CurrentChanged?.Invoke();
@@ -71,6 +76,30 @@ namespace NoteTaker.Services
       Current = note;
       CurrentChanged?.Invoke();
       await SaveAsync(CurrentNoteStorageKey, Current.Number);
+    }
+
+    public async Task DeleteNoteAsync(Note note)
+    {
+      var index = notes.IndexOf(note);
+      if (index < 0)
+        return;
+
+      if (notes.Count == 1)
+      {
+        await ClearAllAsync();
+        return;
+      }
+
+      notes.RemoveAt(index);
+
+      if (note == Current)
+      {
+        Current = notes[Math.Min(index, notes.Count - 1)];
+        await SaveAsync(CurrentNoteStorageKey, Current.Number);
+      }
+
+      CurrentChanged?.Invoke();
+      await SaveNotesAsync();
     }
 
     public async Task ClearAllAsync()
@@ -109,24 +138,24 @@ namespace NoteTaker.Services
 
     private Note AddNoteToList()
     {
-      var note = new Note(notes.Count + 1);
+      var note = new Note(NextNumber());
       notes.Add(note);
       return note;
     }
 
+    private int NextNumber() => notes.Count == 0 ? 1 : notes.Max(n => n.Number) + 1;
+
     private Task SaveNotesAsync()
     {
       CancelPendingSave();
-      return SaveAsync(NotesStorageKey, notes.Select(n => n.Content).ToList());
+      return SaveAsync(NotesStorageKey, notes.Select(n => new SavedNote(n.Number, n.Content)).ToList());
     }
 
     [JSInvokable]
     public void FlushPendingSave()
     {
-      if (pendingSave is null)
-      {
+      if (pendingSave is null) 
         return;
-      }
 
       _ = SaveNotesAsync();
     }
@@ -137,6 +166,8 @@ namespace NoteTaker.Services
       pendingSave?.Dispose();
       pendingSave = null;
     }
+
+    private record SavedNote(int Number, string Content);
 
     private async Task SaveAsync<T>(string key, T value)
     {

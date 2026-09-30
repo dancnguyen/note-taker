@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using NoteTaker.Layout;
 using NoteTaker.Services;
 using Radzen;
 
@@ -24,6 +25,9 @@ namespace NoteTaker.Pages
     [Inject]
     protected NotesService NotesService { get; set; } = default!;
 
+    [CascadingParameter]
+    protected MainLayout Layout { get; set; } = default!;
+
     protected override void OnInitialized()
     {
       NotesService.CurrentChanged += StateHasChanged;
@@ -34,14 +38,13 @@ namespace NoteTaker.Pages
       return NotesService.UpdateCurrentContentAsync(content);
     }
 
+    protected void OnEditorFocusIn() => Layout.CloseSidebar();
+
     Task IHandleEvent.HandleEventAsync(EventCallbackWorkItem callback, object? arg)
     {
       return callback.InvokeAsync(arg);
     }
 
-    public void Dispose()
-    {
-      NotesService.CurrentChanged -= StateHasChanged;
-    }
+    public void Dispose() => NotesService.CurrentChanged -= StateHasChanged;
   }
 }

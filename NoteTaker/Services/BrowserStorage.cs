@@ -14,7 +14,7 @@ namespace NoteTaker.Services
 
     public async Task<T?> GetItemAsync<T>(string key)
     {
-      var json = jsRuntime is IJSInProcessRuntime inProcess ? inProcess.Invoke<string?>("localStorage.getItem", key) : await jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
+      string? json = jsRuntime is IJSInProcessRuntime inProcess ? inProcess.Invoke<string?>("localStorage.getItem", key) : await jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
 
       if (json is null) 
         return default;

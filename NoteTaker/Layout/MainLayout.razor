@@ -20,20 +20,32 @@
     <RadzenPanelMenu>
       @foreach (var note in NotesService.Notes)
       {
-        <RadzenPanelMenuItem Text="@note.Name" Icon="description"
-                             Selected="@(note == NotesService.Current)"
-                             Click="@(() => NotesService.SelectNoteAsync(note))" />
+        <RadzenPanelMenuItem Text="@note.Name" Icon="description" Selected="@(note == NotesService.Current)" Click="@(() => OnNoteClickAsync(note))">
+          <Template>
+            <span class="note-menu-item">
+              <span class="rz-navigation-item-text">@note.Name</span>
+              @if (CanDeleteNote(note))
+              {
+                <span class="delete-note-wrapper" @onclick:stopPropagation="true">
+                  <RadzenButton Icon="close" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.ExtraSmall" Click="@(() => OnDeleteNoteClickAsync(note))" class="delete-note-button" title="@($"Delete {note.Name}")" aria-label="@($"Delete {note.Name}")" />
+                </span>
+              }
+            </span>
+          </Template>
+        </RadzenPanelMenuItem>
       }
     </RadzenPanelMenu>
     <div class="rz-p-4">
       <RadzenStack Gap="0.5rem">
-        <RadzenButton Text="Add Note" Icon="add" Click="@NotesService.AddNoteAsync" class="rz-w-100" />
-        <RadzenButton Text="Export" Icon="download" Variant="Variant.Outlined" Click="@OnExportClickAsync" class="rz-w-100" />
-        <RadzenButton Text="Clear All" Icon="delete_sweep" ButtonStyle="ButtonStyle.Danger" Click="@OnClearAllClickAsync" class="rz-w-100 clear-all-button" />
+        <RadzenButton Text="Add Note" Icon="add" Click="@OnAddNoteClickAsync" class="rz-w-100" />
+        <RadzenButton Text="Export" Icon="download" ButtonStyle="ButtonStyle.Secondary" Click="@OnExportClickAsync" class="rz-w-100 export-button" />
+        <RadzenButton Text="Clear All" Icon="delete" ButtonStyle="ButtonStyle.Danger" Click="@OnClearAllClickAsync" class="rz-w-100 clear-all-button" />
       </RadzenStack>
     </div>
   </RadzenSidebar>
   <RadzenBody>
-    @Body
+    <CascadingValue Value="this" IsFixed="true">
+      @Body
+    </CascadingValue>
   </RadzenBody>
 </RadzenLayout>

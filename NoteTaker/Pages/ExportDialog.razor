@@ -1,12 +1,15 @@
 @using NoteTaker.Models
 
 <RadzenStack Gap="1.5rem">
+  <RadzenFormField Text="File name" Variant="Variant.Outlined" Style="width: 100%;">
+    <RadzenTextBox @bind-Value="@FileName" Immediate="true" />
+  </RadzenFormField>
   <RadzenFormField Text="File type" Variant="Variant.Outlined" Style="width: 100%;">
     <RadzenDropDown @bind-Value="@SelectedFormat" Data="@ExportFormat.All" TextProperty="@nameof(ExportFormat.Label)" />
   </RadzenFormField>
   <RadzenText Text="You'll choose where to save the file next." TextStyle="TextStyle.Body2" class="rz-m-0" />
   <RadzenStack Orientation="Orientation.Horizontal" JustifyContent="JustifyContent.End" Gap="0.5rem">
     <RadzenButton Text="Cancel" ButtonStyle="ButtonStyle.Base" Variant="Variant.Flat" Click="@OnCancel" />
-    <RadzenButton Text="Export" Icon="download" ButtonStyle="ButtonStyle.Primary" Click="@OnExport" />
+    <RadzenButton Text="Export" Icon="download" ButtonStyle="ButtonStyle.Primary" Disabled="@(!CanExport)" Click="@OnExport" />
   </RadzenStack>
 </RadzenStack>

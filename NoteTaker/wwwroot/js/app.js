@@ -137,8 +137,7 @@
       });
     },
 
-    exportNote: async function (title, html, format) {
-      var fileName = title + format.extension;
+    exportNote: async function (title, html, format, fileName) {
       var blob = new Blob([convert(title, html || "", format.extension)], { type: format.mimeType + ";charset=utf-8" });
 
       if (window.showSaveFilePicker) {

@@ -2,4 +2,4 @@
 
 <PageTitle>Note Taker</PageTitle>
 
-<RadzenHtmlEditor @key="NotesService.Current" Value="@NotesService.Current.Content" Input="@OnContentInput" class="note-editor" />
+<RadzenHtmlEditor @key="NotesService.Current" Value="@NotesService.Current.Content" Input="@OnContentInput" @onfocusin="@OnEditorFocusIn" class="note-editor" />
