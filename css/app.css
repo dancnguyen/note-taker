@@ -29,9 +29,29 @@ html:root {
   --rz-header-color: var(--rz-on-primary);
 }
 
-.clear-all-button {
+.export-button {
+  --rz-secondary: #475569;
+  --rz-on-secondary: #ffffff;
+}
+
+.clear-all-button,
+.delete-note-button {
   --rz-danger: #D32F2F;
   --rz-on-danger: #ffffff;
+}
+
+.note-menu-item {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 25px;
+}
+
+.delete-note-wrapper {
+  display: flex;
 }
 
 .note-editor {
